@@ -38,13 +38,9 @@ let JobsController = class JobsController {
     }
     async insertOne(body, res) {
         const { collection, database, document } = body;
-        try {
-            const result = await this.jobsService.insertOne(collection, database, document);
-            return res.status(common_1.HttpStatus.OK).json(result);
-        }
-        catch (error) {
-            return res.status(common_1.HttpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
-        }
+        const db = this.connection.useDb(database);
+        const result = await db.collection(collection).insertOne(document);
+        return result;
     }
     create(createJobDto) {
         return this.jobsService.create(createJobDto);

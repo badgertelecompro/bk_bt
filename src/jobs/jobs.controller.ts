@@ -28,12 +28,10 @@ export class JobsController {
   @Post('insertOne')
   async insertOne(@Body() body, @Res() res) {
     const { collection, database, document } = body;
-    try {
-      const result = await this.jobsService.insertOne(collection, database, document);
-      return res.status(HttpStatus.OK).json(result);
-    } catch (error) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
-    }
+    // Cambiar a la base de datos especificada
+    const db = this.connection.useDb(database);
+    const result = await db.collection(collection).insertOne(document);
+    return result;
   }
     
   @Post()
