@@ -4,6 +4,12 @@ import { UpdateJobDto } from './dto/update-job.dto';
 
 @Injectable()
 export class JobsService {
+  [x: string]: any;
+  async insertOne(collection: string, database: string, document: any): Promise<any> {
+    const db = this.connection.useDb(database);
+    const result = await db.collection(collection).insertOne(document);
+    return result;
+  }
   create(createJobDto: CreateJobDto) {
     return 'This action adds a new job';
   }

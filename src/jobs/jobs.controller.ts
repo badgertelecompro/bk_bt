@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, HttpStatus } from '@nestjs/common';
 import { JobsService } from './jobs.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
@@ -25,7 +25,16 @@ export class JobsController {
       throw new Error(err.message);
     }
   }
-
+  @Post('insertOne')
+  async insertOne(@Body() body, @Res() res) {
+    const { collection, database, document } = body;
+    try {
+      const result = await this.jobsService.insertOne(collection, database, document);
+      return res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
+    }
+  }
     
   @Post()
   create(@Body() createJobDto: CreateJobDto) {

@@ -36,6 +36,16 @@ let JobsController = class JobsController {
             throw new Error(err.message);
         }
     }
+    async insertOne(body, res) {
+        const { collection, database, document } = body;
+        try {
+            const result = await this.jobsService.insertOne(collection, database, document);
+            return res.status(common_1.HttpStatus.OK).json(result);
+        }
+        catch (error) {
+            return res.status(common_1.HttpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
+        }
+    }
     create(createJobDto) {
         return this.jobsService.create(createJobDto);
     }
@@ -60,6 +70,14 @@ __decorate([
     __metadata("design:paramtypes", [find_job_dto_1.FindJobDto]),
     __metadata("design:returntype", Promise)
 ], JobsController.prototype, "find", null);
+__decorate([
+    (0, common_1.Post)('insertOne'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], JobsController.prototype, "insertOne", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),

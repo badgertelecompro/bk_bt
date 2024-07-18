@@ -9,6 +9,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.JobsService = void 0;
 const common_1 = require("@nestjs/common");
 let JobsService = class JobsService {
+    async insertOne(collection, database, document) {
+        const db = this.connection.useDb(database);
+        const result = await db.collection(collection).insertOne(document);
+        return result;
+    }
     create(createJobDto) {
         return 'This action adds a new job';
     }
