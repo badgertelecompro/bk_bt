@@ -26,7 +26,7 @@ export class JobsController {
     }
   }
 
-  
+    
   @Post()
   create(@Body() createJobDto: CreateJobDto) {
     return this.jobsService.create(createJobDto);
