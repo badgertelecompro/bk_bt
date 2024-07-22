@@ -37,10 +37,16 @@ let JobsController = class JobsController {
         }
     }
     async insertOne(body, res) {
-        const { collection, database, document } = body;
-        const db = this.connection.useDb(database);
-        const result = await db.collection(collection).insertOne(document);
-        return result;
+        try {
+            const { collection, database, document } = body;
+            const db = this.connection.useDb(database);
+            const result = await db.collection(collection).insertOne(document);
+            res.status(200).json(result);
+        }
+        catch (error) {
+            console.error('Error en la inserción:', error);
+            res.status(500).json({ error: 'Error en la inserción de datos' });
+        }
     }
     create(createJobDto) {
         return this.jobsService.create(createJobDto);

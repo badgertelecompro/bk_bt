@@ -8,7 +8,7 @@ export declare class JobsController {
     private readonly connection;
     constructor(jobsService: JobsService, connection: Connection);
     find(findJobDto: FindJobDto): Promise<import("mongodb").WithId<import("mongoose").AnyObject>[]>;
-    insertOne(body: any, res: any): Promise<import("mongodb").InsertOneResult<import("mongoose").AnyObject>>;
+    insertOne(body: any, res: any): Promise<void>;
     create(createJobDto: CreateJobDto): string;
     findAll(): string;
     findOne(id: string): string;
