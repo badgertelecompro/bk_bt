@@ -20,6 +20,7 @@ const update_job_dto_1 = require("./dto/update-job.dto");
 const find_job_dto_1 = require("./dto/find-job.dto");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
+const mongodb_1 = require("mongodb");
 let JobsController = class JobsController {
     constructor(jobsService, connection) {
         this.jobsService = jobsService;
@@ -48,14 +49,71 @@ let JobsController = class JobsController {
             res.status(500).json({ error: 'Error en la inserción de datos' });
         }
     }
+    async findOne(findJobDto, res) {
+        const { collection, database, filter } = findJobDto;
+        const db = this.connection.useDb(database);
+        try {
+            if (filter._id) {
+                filter._id = new mongodb_1.ObjectId(filter._id);
+            }
+            const document = await db.collection(collection).findOne(filter);
+            if (document) {
+                res.status(200).json(document);
+            }
+            else {
+                res.status(404).json({ error: 'Documento no encontrado' });
+            }
+        }
+        catch (err) {
+            console.error('Error en la consulta:', err);
+            res.status(500).json({ error: 'Error en la consulta de datos' });
+        }
+    }
+    async updateOne(body, res) {
+        const { collection, database, filter, update } = body;
+        const db = this.connection.useDb(database);
+        try {
+            if (filter._id) {
+                filter._id = new mongodb_1.ObjectId(filter._id);
+            }
+            const result = await db.collection(collection).updateOne(filter, update);
+            if (result.matchedCount > 0) {
+                res.status(200).json(result);
+            }
+            else {
+                res.status(404).json({ error: 'Documento no encontrado' });
+            }
+        }
+        catch (err) {
+            console.error('Error en la actualización:', err);
+            res.status(500).json({ error: 'Error en la actualización de datos' });
+        }
+    }
+    async deleteOne(body, res) {
+        const { collection, database, filter } = body;
+        const db = this.connection.useDb(database);
+        try {
+            if (filter._id) {
+                filter._id = new mongodb_1.ObjectId(filter._id);
+            }
+            const result = await db.collection(collection).deleteOne(filter);
+            if (result.deletedCount > 0) {
+                res.status(200).json(result);
+            }
+            else {
+                res.status(404).json({ error: 'Documento no encontrado' });
+            }
+        }
+        catch (err) {
+            console.error('Error en la eliminación:', err);
+            res.status(500).json({ error: 'Error en la eliminación de datos' });
+        }
+    }
     create(createJobDto) {
         return this.jobsService.create(createJobDto);
     }
     findAll() {
         return this.jobsService.findAll();
-    }
-    findOne(id) {
-        return this.jobsService.findOne(+id);
     }
     update(id, updateJobDto) {
         return this.jobsService.update(+id, updateJobDto);
@@ -81,6 +139,30 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], JobsController.prototype, "insertOne", null);
 __decorate([
+    (0, common_1.Post)('findOne'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [find_job_dto_1.FindJobDto, Object]),
+    __metadata("design:returntype", Promise)
+], JobsController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Post)('updateOne'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], JobsController.prototype, "updateOne", null);
+__decorate([
+    (0, common_1.Post)('deleteOne'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], JobsController.prototype, "deleteOne", null);
+__decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -93,13 +175,6 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], JobsController.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], JobsController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
